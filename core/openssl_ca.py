@@ -85,8 +85,8 @@ class CA(object):
             extension = 'usr_cert'
             policy = 'policy_usr'
         elif csr.certtype == 'Server':
-            extension = 'srv_cert'
-            policy = 'policy_match'
+            extension = 'server_cert'
+            policy = 'policy_strict'
         else:
             raise Exception("Invalid certificate type provided {certtype}".format(certtype=csr.certtype))
 
@@ -273,7 +273,7 @@ class CSR(object):
         self.openssl_cfg_string = '[ req ]\n' \
                                   'default_bits = {keylength}\n' \
                                   'prompt = no\n' \
-                                  'default_md = sha265\n' \
+                                  'default_md = sha256\n' \
                                   'distinguished_name = dn\n'.format(keylength=self.keylength)
 
         if self.certtype == 'Server':
@@ -366,18 +366,24 @@ def generate_p12(crt):
 
 def run_cmd(cmd, input=None):
     process = Popen(cmd.split(), shell=False, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    stdout, stderr = process.communicate(input=input)
+
+    inputEncoded=None
+    if input != None:
+        inputEncoded=str.encode(input)
+
+    result = process.communicate(input=inputEncoded)
+    stdout, stderr = result
 
     if process.returncode:
         raise Exception(stderr, cmd)
 
-    return stdout
+    return stdout.decode("utf-8")
 
 
 def run_cmd_pexpect(cmd, output_input):
     child = pexpect.spawn(cmd)
 
-    plog = file('pexpect.txt', 'w')
+    plog = open('pexpect.txt', 'wb')
     child.logfile = plog
 
     for output, input in output_input:

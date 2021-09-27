@@ -3,7 +3,7 @@ __author__ = 'dennisverslegers'
 from datetime import date
 from validate import Validator
 from configobj import ConfigObj
-from web.wsgiserver import CherryPyWSGIServer
+from cheroot.wsgi import Server as CherryPyWSGIServer
 from core.openssl_ca import run_cmd, run_cmd_pexpect, generate_password, opensslconfigfileparser, generate_certificate
 from core.forms import config_form, usercert_form, servercert_form, bulkcert_form, revoke_form, report_form
 
@@ -187,7 +187,10 @@ class Login(object):
             authreq = True
         else:
             auth = re.sub('^Basic ', '', auth)
-            username,password = base64.decodestring(auth).split(':')
+            #username,password = base64.decodestring(auth).split(':')
+            result = base64.b64decode(auth).decode("utf-8")
+            print(result)
+            username,password = result.split(':')
             if (username, password) in core.users.allowed:
                 raise web.seeother('/home')
             else:

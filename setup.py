@@ -11,6 +11,7 @@ setup(
     description='',
     install_requires=[
         "web.py>=0.37",
+        "cheroot",
         "configobj",
         "pyyaml",
         "pexpect",
