@@ -93,15 +93,15 @@ class CA(object):
             raise Exception("Invalid certificate type provided {certtype}".format(certtype=csr.certtype))
 
         # Default openssl cmd for signing csr
-        cmd = 'openssl ca -config {configfile} ' \
-              '-name {ca_name} ' \
-              '-days {validity} ' \
-              '-extensions {extension} ' \
-              '-policy {policy} ' \
-              '-passin pass:{password} ' \
-              '-batch ' \
-              '-out {outputfile} ' \
-              '-infiles {infile}'.format(configfile=self.configfile,
+        cmd = 'openssl!ca!-config!{configfile}!' \
+              '-name!{ca_name}!' \
+              '-days!{validity}!' \
+              '-extensions!{extension}!' \
+              '-policy!{policy}!' \
+              '-passin!pass:{password}!' \
+              '-batch!' \
+              '-out!{outputfile}!' \
+              '-infiles!{infile}'.format(configfile=self.configfile,
                                          ca_name=self.name,
                                          validity=csr.validity,
                                          extension=extension,
@@ -112,17 +112,17 @@ class CA(object):
 
         # Modified cmd for signing csr using smart card
         if self.use_smartcard:
-                cmd = 'openssl ca -engine pkcs11 ' \
-                      '-keyfile {smartcard_slot} ' \
-                      '-keyform e ' \
-                      '-config {configfile} ' \
-                      '-name {ca_name} ' \
-                      '-days {validity} ' \
-                      '-extensions {extension} ' \
-                      '-policy {policy} ' \
-                      '-batch ' \
-                      '-out {outputfile} ' \
-                      '-infiles {infile}'.format(configfile=self.configfile,
+                cmd = 'openssl!ca!-engine pkcs11!' \
+                      '-keyfile!{smartcard_slot}!' \
+                      '-keyform!e!' \
+                      '-config!{configfile}!' \
+                      '-name!{ca_name}!' \
+                      '-days!{validity}!' \
+                      '-extensions!{extension}!' \
+                      '-policy!{policy}!' \
+                      '-batch!' \
+                      '-out!{outputfile}!' \
+                      '-infiles!{infile}'.format(configfile=self.configfile,
                                                  ca_name=self.name,
                                                  validity=csr.validity,
                                                  extension=extension,
@@ -154,13 +154,13 @@ class CA(object):
         certpath = os.path.join(self.dir, self.new_certs_dir, serial + '.pem')
 
         if self.use_smartcard:
-            cmd = 'openssl ca -engine pkcs11 ' \
-                  '-keyfile {smartcard_slot} ' \
-                  '-keyform e ' \
-                  '-config {configfile} ' \
-                  '-name {ca_name} ' \
-                  '-batch ' \
-                  '-revoke {certpath}'.format(smartcard_slot=self.smartcard_slot,
+            cmd = 'openssl!ca!-engine pkcs11!' \
+                  '-keyfile!{smartcard_slot}!' \
+                  '-keyform!e!' \
+                  '-config!{configfile}!' \
+                  '-name!{ca_name}!' \
+                  '-batch!' \
+                  '-revoke!{certpath}'.format(smartcard_slot=self.smartcard_slot,
                                               configfile=self.configfile,
                                               ca_name=self.name,
                                               certpath=certpath)
@@ -168,11 +168,11 @@ class CA(object):
             run_cmd_pexpect(cmd, (('PKCS#11 token PIN:', password),))
 
         else:
-            cmd = 'openssl ca -config {configfile} ' \
-                  '-name {ca_name} ' \
-                  '-passin pass:{password} ' \
-                  '-batch ' \
-                  '-revoke {certpath}'.format(configfile=self.configfile,
+            cmd = 'openssl!ca!-config!{configfile}!' \
+                  '-name!{ca_name}!' \
+                  '-passin!pass:{password}!' \
+                  '-batch!' \
+                  '-revoke!{certpath}'.format(configfile=self.configfile,
                                               ca_name=self.name,
                                               password=password,
                                               certpath=certpath)
@@ -186,14 +186,14 @@ class CA(object):
 
         # Generate openssl CRL
         if self.use_smartcard:
-            cmd = 'openssl ca -engine pkcs11 ' \
-                  '-keyfile {smartcard_slot} ' \
-                  '-keyform e ' \
-                  '-config {configfile} ' \
-                  '-name {ca_name} ' \
-                  '-batch ' \
-                  '-gencrl ' \
-                  '-out {crlpemfile}'.format(smartcard_slot=self.smartcard_slot,
+            cmd = 'openssl!ca!-engine pkcs11!' \
+                  '-keyfile!{smartcard_slot}!' \
+                  '-keyform!e!' \
+                  '-config!{configfile}!' \
+                  '-name!{ca_name}!' \
+                  '-batch!' \
+                  '-gencrl!' \
+                  '-out!{crlpemfile}'.format(smartcard_slot=self.smartcard_slot,
                                              configfile=self.configfile,
                                              ca_name=self.name,
                                              crlpemfile=crlpemfile)
@@ -201,12 +201,12 @@ class CA(object):
             run_cmd_pexpect(cmd, (('PKCS#11 token PIN:', password),))
 
         else:
-            cmd = 'openssl ca -config {configfile} ' \
-                  '-name {ca_name} ' \
-                  '-passin pass:{password} ' \
-                  '-batch ' \
-                  '-gencrl ' \
-                  '-out {crlpemfile}'.format(configfile=self.configfile,
+            cmd = 'openssl!ca!-config!{configfile}!' \
+                  '-name!{ca_name}!' \
+                  '-passin!pass:{password}!' \
+                  '-batch!' \
+                  '-gencrl!' \
+                  '-out!{crlpemfile}'.format(configfile=self.configfile,
                                              ca_name=self.name,
                                              password=password,
                                              crlpemfile=crlpemfile)
@@ -214,9 +214,9 @@ class CA(object):
             run_cmd(cmd)
 
         # Convert CRL to txt
-        cmd = 'openssl crl ' \
-              '-in {crlpemfile} ' \
-              '-out {crltxtfile} ' \
+        cmd = 'openssl!crl!' \
+              '-in!{crlpemfile}!' \
+              '-out!{crltxtfile}!' \
               '-text'.format(crlpemfile=crlpemfile,
                              crltxtfile=crltxtfile)
 
@@ -321,7 +321,7 @@ class CSR(object):
 
         # Generate openssl csr based on previously generated configuration and create new private key
 
-        cmd = "openssl req -newkey rsa:2048 -keyout /dev/stdout -nodes -config /dev/stdin -out /dev/stdout -batch"
+        cmd = "openssl!req!-newkey!rsa:2048!-keyout!/dev/stdout!-nodes!-config!/dev/stdin!-out!/dev/stdout!-batch"
         output = run_cmd(cmd, input=self.openssl_cfg_string)
         self.openssl_key , self.openssl_csr = re.split('-----END PRIVATE KEY-----', output)
         self.openssl_key += '-----END PRIVATE KEY-----'
@@ -349,14 +349,14 @@ def generate_p12(crt):
     write_to_file(crt.p12pwdfile, crt.p12pwd)
 
     # run openssl command to generate p12 container
-    cmd = "openssl pkcs12 " \
-          "-export " \
-          "-clcerts " \
-          "-in {crtfile} " \
-          "-inkey {keyfile} " \
-          "-out {p12file} " \
-          "-certfile {chainfile} " \
-          "-passout pass:{password}" .format(crtfile=crt.crtfile,
+    cmd = "openssl!pkcs12!" \
+          "-export!" \
+          "-clcerts!" \
+          "-in!{crtfile}!" \
+          "-inkey!{keyfile}!" \
+          "-out!{p12file}!" \
+          "-certfile!{chainfile}!" \
+          "-passout!pass:{password}" .format(crtfile=crt.crtfile,
                                              keyfile=crt.keyfile,
                                              p12file=crt.p12file,
                                              chainfile=crt.chainfile,
@@ -368,7 +368,7 @@ def generate_p12(crt):
 
 
 def run_cmd(cmd, input=None):
-    process = Popen(cmd.split(), shell=False, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    process = Popen(cmd.split('!'), shell=False, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
     inputEncoded=None
     if input != None:
@@ -384,7 +384,12 @@ def run_cmd(cmd, input=None):
 
 
 def run_cmd_pexpect(cmd, output_input):
-    child = pexpect.spawn(cmd)
+
+    splits = cmd.split('!')
+    exe = splits[0]
+    args= splits[1:]
+
+    child = pexpect.spawn(exe,args)
 
     plog = open('pexpect.txt', 'wb')
     child.logfile = plog
@@ -417,7 +422,7 @@ def write_to_file(pathtofile, contents, mode='overwrite'):
 
 
 def generate_password(length):
-    chars = string.ascii_letters + string.digits + '!@#$#*'
+    chars = string.ascii_letters + string.digits + '@#$#*'
     random.seed = (os.urandom(1024))
     return ''.join(random.choice(chars) for i in range(length))
 

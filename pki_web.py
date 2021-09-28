@@ -68,13 +68,13 @@ version = '1.0'
 
 
 def create_zip(sources, destination, encrypt=False, password=''):
-    sources = ' '.join(sources)
+    sources = '!'.join(sources)
 
     if encrypt:
-        cmd = 'zip -ejr {destination} {sources}'.format(sources=sources, destination=destination)
+        cmd = 'zip!-ejr!{destination}!{sources}'.format(sources=sources, destination=destination)
         run_cmd_pexpect(cmd, (('Enter password:', password), ('Verify password:', password)))
     else:
-        cmd = 'zip -jr {destination} {sources}'.format(sources=sources, destination=destination)
+        cmd = 'zip!-jr!{destination}!{sources}'.format(sources=sources, destination=destination)
         run_cmd(cmd)
 
 
