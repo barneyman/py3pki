@@ -20,6 +20,7 @@ class CRT(object):
         self.p12pwd = ''
         self.p12pwdfile = ''
         self.commonname = ''
+        self.subjectaltname= ''
         self.validity = ''
         self.certtype = ''
         self.chainfile = ''
@@ -72,6 +73,7 @@ class CA(object):
         crt.p12file = os.path.join(certificateoutputpath, csr.commonname + '.p12')
         crt.p12pwdfile = os.path.join(certificateoutputpath, csr.commonname + '.pwd')
         crt.commonname = csr.commonname
+        crt.subjectaltname = csr.subjectaltname
         crt.validity = csr.validity
         crt.certtype = csr.certtype
         crt.chainfile = os.path.join(self.dir, self.chain_file)
@@ -86,7 +88,7 @@ class CA(object):
             policy = 'policy_strict'
         elif csr.certtype == 'Server':
             extension = 'server_cert'
-            policy = 'policy_strict'
+            policy = 'policy_ssl'
         else:
             raise Exception("Invalid certificate type provided {certtype}".format(certtype=csr.certtype))
 
@@ -257,6 +259,7 @@ class CSR(object):
         self.organisation = ''
         self.organisationalunit = ''
         self.commonname = ''
+        self.subjectaltname = ''
         self.email = ''
         self.openssl_cfg_string = ''
         self.openssl_key = ''
@@ -288,7 +291,7 @@ class CSR(object):
                                        'subjectAltName = @alternate_names\n' \
                                        'nsComment = "OpenSSL Generated Certificate\n' \
                                        '[ alternate_names ]\n' \
-                                       'DNS.1 = {commonname}\n'.format(commonname=self.commonname)
+                                       'DNS.1 = {san}\n'.format(san=self.subjectaltname)
 
         self.openssl_cfg_string += '[ dn ]\n' \
                                   'CN = {commonname}\n' \

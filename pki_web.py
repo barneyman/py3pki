@@ -364,7 +364,8 @@ class ServerCertificate(object):
                         'locality': data['locality'],
                         'organisation': data['organisation'],
                         'organisationalunit': data['organisationalunit'],
-                        'commonname': data['commonname']}
+                        'commonname': data['commonname'],
+                        'subjectaltname':data['subjectaltname']}
 
             try:
                 # Generate certificate based on CSR
