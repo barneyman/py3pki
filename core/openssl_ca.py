@@ -83,7 +83,7 @@ class CA(object):
         # Determine cmd for signing
         if csr.certtype == 'Client':
             extension = 'usr_cert'
-            policy = 'policy_usr'
+            policy = 'policy_strict'
         elif csr.certtype == 'Server':
             extension = 'server_cert'
             policy = 'policy_strict'
