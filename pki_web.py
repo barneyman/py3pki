@@ -5,7 +5,7 @@ from validate import Validator
 from configobj import ConfigObj
 from cheroot.wsgi import Server as CherryPyWSGIServer
 from core.openssl_ca import run_cmd, run_cmd_pexpect, generate_password, opensslconfigfileparser, generate_certificate
-from core.forms import config_form, usercert_form, servercert_form, bulkcert_form, revoke_form, report_form
+from core.forms import config_form, usercert_form, servercert_form, bulkcert_form, revoke_form, report_form, codesigncert_form
 
 import os
 import re
@@ -30,6 +30,7 @@ urls = ('/', 'Home',
         '/generatecertificate', 'GenerateCertificate',
         '/clientcertificate', 'ClientCertificate',
         '/servercertificate', 'ServerCertificate',
+        '/codesigncertificate', 'CodeSignCertificate',
         '/bulk', 'Bulk',
         '/revoke', 'Revoke',
         '/crl', 'Crl',
@@ -317,6 +318,75 @@ class ClientCertificate(object):
 
         else:
             raise web.seeother('/login')
+
+
+
+class CodeSignCertificate(object):
+    def GET(self):
+        if web.ctx.env.get('HTTP_AUTHORIZATION') is not None:
+            form = codesigncert_form()
+
+            # Set values based on default CSR
+            form.selected_ca.args = [ca.name for ca in ca_list]
+            form.country.value = defaultcsr.country
+            form.state.value = defaultcsr.state
+            form.locality.value = defaultcsr.locality
+            form.organisation.value = defaultcsr.organisation
+            form.organisationalunit.value = defaultcsr.organisationalunit
+            form.validity.value = 365
+
+            return render.form(form)
+
+        else:
+            raise web.seeother('/login')
+
+    def POST(self):
+        if web.ctx.env.get('HTTP_AUTHORIZATION') is not None:
+            form = usercert_form()
+            data = web.input()
+
+            if not form.validates():
+                # Set values based on default CSR
+                form.selected_ca.args = [ca.name for ca in ca_list]
+                form.country.value = defaultcsr.country
+                form.state.value = defaultcsr.state
+                form.locality.value = defaultcsr.locality
+                form.organisation.value = defaultcsr.organisation
+                form.organisationalunit.value = defaultcsr.organisationalunit
+                form.validity.value = 365
+
+                return render.generatecertificate_err(form, version)
+
+            # Prepare csr data based on form input
+            csr_data = {'certtype': data['certtype'],
+                        'keylength': 2048,
+                        'validity': data['validity'],
+                        'country': data['country'],
+                        'state': data['state'],
+                        'locality': data['locality'],
+                        'organisation': data['organisation'],
+                        'organisationalunit': data['organisationalunit'],
+                        'commonname': data['commonname'],
+                        'email': data['email']}
+
+            try:
+                # Generate certificate based on CSR
+                crt = generate_certificate(csr_data, ca_list, data['selected_ca'], data['password'])
+            except Exception as e:
+                return render.error(e, version)
+
+            # Prepare certificate for download
+            crt_list = [crt, ]
+            zipfile, password = prepare_crt_for_download(crt_list)
+
+            return render.download(crt_list, zipfile, password, version)
+
+        else:
+            raise web.seeother('/login')
+
+
+
+
 
 
 class ServerCertificate(object):

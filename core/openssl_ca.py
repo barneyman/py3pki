@@ -89,6 +89,9 @@ class CA(object):
         elif csr.certtype == 'Server':
             extension = 'server_cert'
             policy = 'policy_ssl'
+        elif csr.certtype == 'CodeSign':
+            extension = 'codesign_cert'
+            policy = 'policy_strict'
         else:
             raise Exception("Invalid certificate type provided {certtype}".format(certtype=csr.certtype))
 
@@ -309,6 +312,8 @@ class CSR(object):
         if self.certtype == 'Server':
             pass
         elif self.certtype == 'Client':
+            self.openssl_cfg_string += 'emailAddress = {emailaddress}\n'.format(emailaddress=self.email)
+        elif self.certtype == 'CodeSign':
             self.openssl_cfg_string += 'emailAddress = {emailaddress}\n'.format(emailaddress=self.email)
         else:
             raise Exception('Invalid certificate type provided', self.certtype)
